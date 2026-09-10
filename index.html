@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Go PayTV Status</title>
+
+<style>
+html, body {
+    margin: 0;
+    overflow: auto;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-size: 12px;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 10px auto;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.row.top .section { flex: 1; min-width: 300px; }
+
+.section {
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+    min-width: 0;
+}
+
+.bug-fix { flex: 2; min-width: 400px; }
+.bug-raised { flex: 1; min-width: 200px; }
+.bug-breakdown { flex: 1; min-width: 200px; }
+
+/* ✅ HEADER RESTORED */
+.header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.header p {
+    margin: 2px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* ✅ section header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ✅ FIX TABLE ALIGNMENT */
+th, td {
+    text-align: left;   /* ✅ FIXED */
+    padding: 6px;
+    white-space: nowrap;
+}
+
+th {
+    color: #94a3b8;
+}
+
+/* table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: max-content;
+}
+
+td {
+    border-top: 1px solid #334155;
+}
+
+/* colors */
+.warn { color: #facc15; }
+.good { color: #22c55e; }
+.bad { color: #ef4444; }
+
+/* ✅ PROGRESS BAR BACK */
+.progress {
+    background: #334155;
+    height: 6px;
+    border-radius: 6px;
+    margin-top: 3px;
+    min-width: 80px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #22c55e;
+    border-radius: 6px;
+}
+
+/* ✅ SMALL DROPDOWN */
+.dropdown {
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 10px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+.section::-webkit-scrollbar {
+    height: 6px;
+}
+
+.section::-webkit-scrollbar-track {
+    background: #0f172a;
+    border-radius: 6px;
+}
+
+.section::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 6px;
+}
+
+.section::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- ✅ HEADER FIX -->
+<div class="header">
+    <h1>Astro Go PayTV Status</h1>
+    <p>Small Screen Timeline: 02 JULY - 23 JULY </p>
+    <p>Big Screen Timeline: 21 JULY - 7 AUGUST </p>
+    <p>Environment: Beta-Production</p>
+</div>
+
+<!-- TOP -->
+<div class="row top">
+
+<!-- OVERALL -->
+<div class="section">
+<h3>Overall M9 Release Note Status</h3>
+<table>
+<tr>
+<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>NA</th><th>%</th>
+</tr>
+<tbody id="overallTable"></tbody>
+</table>
+</div>
+
+<!-- M9 -->
+<div class="section">
+<h3>Total M9 Feature Delivered</h3>
+<table>
+<tr>
+<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>%</th>
+</tr>
+<tbody id="m8Table"></tbody>
+</table>
+</div>
+
+<!-- M7 -->
+<div class="section">
+<h3>Total M0-M8 Feature Delivered</h3>
+<table>
+<tr>
+<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>%</th>
+</tr>
+<tbody id="m8Table2"></tbody>
+</table>
+</div>
+
+</div>
+
+<!-- BOTTOM -->
+<div class="row">
+
+<!-- BUG FIX -->
+<div class="section bug-fix">
+<h3>Bug Fixes Status</h3>
+<table>
+<tr>
+<th>Platform</th><th>Delivered</th><th>Resolved[IN PROGRESS]</th><th>Done</th><th>Reopened</th><th>%</th>
+</tr>
+<tbody id="bugFixTable"></tbody>
+</table>
+</div>
+
+<!-- BUG RAISED -->
+<div class="section bug-raised">
+<div class="section-header">
+<h3>New Bugs Raised</h3>
+
+<select class="dropdown" onchange="handleMenu(this)">
+<option value="">JIRA</option>
+<option value="jira">Total M9 JIRA Raised Dashboard</option>
+</select>
+</div>
+
+<table>
+<tr><th>Platform</th><th>L1</th></tr>
+<tbody id="bugRaisedTable"></tbody>
+</table>
+</div>
+
+<!-- BREAKDOWN -->
+<div class="section bug-breakdown">
+<h3>Bug Raised Breakdown</h3>
+<table>
+<tr><th>Category</th><th>Total</th></tr>
+<tbody id="bugBreakdownTable"></tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* OVERALL + PROGRESS */
+const overall = [
+ {n:"Web",d:38,v:30,b:0,na:2},
+ {n:"Android",d:38,v:30,b:0,na:2},
+ {n:"iOS",d:38,v:30,b:0,na:2},
+ {n:"ATV",d:34,v:14,b:0,na:0},
+ {n:"LG",d:30,v:26,b:0,na:0},
+ {n:"SAMSUNG",d:30,v:24,b:0,na:0},
+ {n:"VIDAA",d:30,v:19,b:0,na:0}
+];
+
+document.getElementById("overallTable").innerHTML =
+overall.map(p=>{
+ let pct=(p.v/p.d*100).toFixed(1);
+ return `<tr>
+ <td>${p.n}</td><td>${p.d}</td><td class="warn">${p.v}</td><td>${p.b}</td><td>${p.na}</td>
+ <td>
+ ${pct}%
+ <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+ </td></tr>`;
+}).join("");
+
+/* M9 + PROGRESSs */
+const m8 = [
+ {n:"web",d:38,v:30,b:0},
+ {n:"Android",d:38,v:30,b:0},
+ {n:"iOS",d:38,v:30,b:0},
+ {n:"ATV",d:34,v:14,b:0,na:0},
+ {n:"LG",d:30,v:26,b:0,na:0},
+ {n:"SAMSUNG",d:30,v:24,b:0,na:0},
+ {n:"VIDAA",d:30,v:19,b:0,na:0},
+];
+
+/* M8 + PROGRESS */
+const m7 = [
+ {n:"web",d:0,v:0,b:0},
+ {n:"Android",d:0,v:0,b:0},
+ {n:"iOS",d:0,v:0,b:0}
+]
+  
+/* M9 PROGRESS */
+document.getElementById("m8Table").innerHTML =
+m8.map(p=>{
+ let pct=(p.v/p.d*100).toFixed(1);
+ return `<tr>
+ <td>${p.n}</td><td>${p.d}</td><td class="good">${p.v}</td><td>${p.b}</td>
+ <td>${pct}%<div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></td>
+ </tr>`;
+}).join("");
+
+/* M8 PROGRESS */
+document.getElementById("m8Table2").innerHTML =
+m7.map(p=>{
+ let pct=(p.v/p.d*100).toFixed(1);
+ return `<tr>
+ <td>${p.n}</td><td>${p.d}</td><td class="good">${p.v}</td><td>${p.b}</td>
+ <td>${pct}%<div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></td>
+ </tr>`;
+}).join("");
+
+/* BUG RAISED */
+const br=[46,65,54,16,27,24,25];
+const names=["Web","Android","iOS","ATV","LG","SAMSUNG","VIDAA"];
+let total=0, html="";
+
+for(let i=0;i<br.length;i++){
+ total+=br[i];
+ html+=`<tr><td>${names[i]}</td><td class="warn">${br[i]}</td></tr>`;
+}
+html+=`<tr><td><b>Total</b></td><td class="good"><b>${total}</b></td></tr>`;
+document.getElementById("bugRaisedTable").innerHTML=html;
+
+/* BUG FIX + PROGRESS */
+const bf=[
+ {n:"Web",d:17,res:0,done:13,r:4},
+ {n:"Android",d:19,res:0,done:14,r:5},
+ {n:"iOS",d:11,res:0,done:8,r:3},
+ {n:"ATV",d:27,res:0,done:20,r:7},
+ {n:"LG",d:20,res:1,done:17,r:2},
+ {n:"SAMSUNG",d:21,res:1,done:17,r:3},
+ {n:"VIDAA",d:22,res:1,done:18,r:3},
+];
+
+document.getElementById("bugFixTable").innerHTML =
+bf.map(p => {
+    let pct = ((p.done + p.r) / p.d * 100).toFixed(1);
+
+    return `<tr>
+        <td>${p.n}</td>
+        <td>${p.d}</td>
+        <td>${p.res}</td>
+        <td>${p.done}</td>
+        <td>${p.r}</td>
+        <td>
+            ${pct}%
+            <div class="progress">
+                <div class="progress-bar" style="width:${pct}%"></div>
+            </div>
+        </td>
+    </tr>`;
+}).join("");
+
+
+/* BUG BREAKDOWN + TOTAL SUM */
+const breakdown = [
+ {c:"Component Functionality",t:103,cl:"bad"},
+ {c:"UI/UX",t:40,cl:"warn"},
+ {c:"CDVR",t:41,cl:""},
+ {c:"SENTRY",t:1,cl:""},
+ {c:"PLATFORM SECURITY",t:2,cl:""},
+ {c:"AA CSAI",t:1,cl:""},
+ {c:"CLEVERTAP",t:7,cl:""}
+];
+
+let breakdownTotal = 0;
+let breakdownHtml = "";
+
+for(let i=0;i<breakdown.length;i++){
+ breakdownTotal += breakdown[i].t;
+ breakdownHtml += `<tr><td>${breakdown[i].c}</td><td class="${breakdown[i].cl}">${breakdown[i].t}</td></tr>`;
+}
+
+breakdownHtml += `<tr><td><b>Total</b></td><td class="good"><b>${breakdownTotal}</b></td></tr>`;
+document.getElementById("bugBreakdownTable").innerHTML = breakdownHtml;
+
+/* DROPDOWN */
+function handleMenu(select){
+ if(select.value==="jira"){
+  window.open("https://astrogo.atlassian.net/issues/?jql=filter%3D57938","_blank");
+ }
+ select.value="";
+}
+
+</script>
+
+</body>
+</html>
