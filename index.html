@@ -157,39 +157,11 @@ td {
 <div class="row top">
 
 <!-- OVERALL -->
-<div class="section">
-<h3>Overall M9 Release Note Status</h3>
-<table>
-<tr>
-<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>NA</th><th>%</th>
-</tr>
-<tbody id="overallTable"></tbody>
-</table>
-</div>
 
 <!-- M9 -->
-<div class="section">
-<h3>Total M9 Feature Delivered</h3>
-<table>
-<tr>
-<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>%</th>
-</tr>
-<tbody id="m8Table"></tbody>
-</table>
-</div>
+
 
 <!-- M7 -->
-<div class="section">
-<h3>Total M0-M8 Feature Delivered</h3>
-<table>
-<tr>
-<th>Platform</th><th>Delivered</th><th>Validated</th><th>Blocked</th><th>%</th>
-</tr>
-<tbody id="m8Table2"></tbody>
-</table>
-</div>
-
-</div>
 
 <!-- BOTTOM -->
 <div class="row">
@@ -238,67 +210,19 @@ td {
 <script>
 
 /* OVERALL + PROGRESS */
-const overall = [
- {n:"Web",d:38,v:30,b:0,na:2},
- {n:"Android",d:38,v:30,b:0,na:2},
- {n:"iOS",d:38,v:30,b:0,na:2},
- {n:"ATV",d:34,v:14,b:0,na:0},
- {n:"LG",d:30,v:26,b:0,na:0},
- {n:"SAMSUNG",d:30,v:24,b:0,na:0},
- {n:"VIDAA",d:30,v:19,b:0,na:0}
-];
 
-document.getElementById("overallTable").innerHTML =
-overall.map(p=>{
- let pct=(p.v/p.d*100).toFixed(1);
- return `<tr>
- <td>${p.n}</td><td>${p.d}</td><td class="warn">${p.v}</td><td>${p.b}</td><td>${p.na}</td>
- <td>
- ${pct}%
- <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
- </td></tr>`;
-}).join("");
 
 /* M9 + PROGRESSs */
-const m8 = [
- {n:"web",d:38,v:30,b:0},
- {n:"Android",d:38,v:30,b:0},
- {n:"iOS",d:38,v:30,b:0},
- {n:"ATV",d:34,v:14,b:0,na:0},
- {n:"LG",d:30,v:26,b:0,na:0},
- {n:"SAMSUNG",d:30,v:24,b:0,na:0},
- {n:"VIDAA",d:30,v:19,b:0,na:0},
-];
 
 /* M8 + PROGRESS */
-const m7 = [
- {n:"web",d:0,v:0,b:0},
- {n:"Android",d:0,v:0,b:0},
- {n:"iOS",d:0,v:0,b:0}
-]
+
   
 /* M9 PROGRESS */
-document.getElementById("m8Table").innerHTML =
-m8.map(p=>{
- let pct=(p.v/p.d*100).toFixed(1);
- return `<tr>
- <td>${p.n}</td><td>${p.d}</td><td class="good">${p.v}</td><td>${p.b}</td>
- <td>${pct}%<div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></td>
- </tr>`;
-}).join("");
 
 /* M8 PROGRESS */
-document.getElementById("m8Table2").innerHTML =
-m7.map(p=>{
- let pct=(p.v/p.d*100).toFixed(1);
- return `<tr>
- <td>${p.n}</td><td>${p.d}</td><td class="good">${p.v}</td><td>${p.b}</td>
- <td>${pct}%<div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></td>
- </tr>`;
-}).join("");
 
 /* BUG RAISED */
-const br=[46,65,54,16,27,24,25];
+const br=[0,0,0,0,0,0,0];
 const names=["Web","Android","iOS","ATV","LG","SAMSUNG","VIDAA"];
 let total=0, html="";
 
@@ -311,13 +235,13 @@ document.getElementById("bugRaisedTable").innerHTML=html;
 
 /* BUG FIX + PROGRESS */
 const bf=[
- {n:"Web",d:17,res:0,done:13,r:4},
- {n:"Android",d:19,res:0,done:14,r:5},
- {n:"iOS",d:11,res:0,done:8,r:3},
- {n:"ATV",d:27,res:0,done:20,r:7},
- {n:"LG",d:20,res:1,done:17,r:2},
- {n:"SAMSUNG",d:21,res:1,done:17,r:3},
- {n:"VIDAA",d:22,res:1,done:18,r:3},
+ {n:"Web",d:45,res:26,done:17,r:2},
+ {n:"Android",d:76,res:62,done:14,r:0},
+ {n:"iOS",d:68,res:60,done:7,r:1},
+ {n:"ATV",d:86,res:85,done:0,r:1},
+ {n:"LG",d:78,res:55,done:21,r:2},
+ {n:"SAMSUNG",d:78,res:56,done:20,r:2},
+ {n:"VIDAA",d:75,res:54,done:19,r:2},
 ];
 
 document.getElementById("bugFixTable").innerHTML =
@@ -342,13 +266,7 @@ bf.map(p => {
 
 /* BUG BREAKDOWN + TOTAL SUM */
 const breakdown = [
- {c:"Component Functionality",t:103,cl:"bad"},
- {c:"UI/UX",t:40,cl:"warn"},
- {c:"CDVR",t:41,cl:""},
- {c:"SENTRY",t:1,cl:""},
- {c:"PLATFORM SECURITY",t:2,cl:""},
- {c:"AA CSAI",t:1,cl:""},
- {c:"CLEVERTAP",t:7,cl:""}
+ {c:"Component Functionality",t:1,cl:"bad"},
 ];
 
 let breakdownTotal = 0;
